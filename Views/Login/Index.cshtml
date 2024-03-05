@@ -1,0 +1,18 @@
+﻿﻿@model back_end_s6_l01_02_03_04.Models.Admin
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Login</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.LabelFor(model => model.Username)
+    @Html.EditorFor(model => model.Username)
+
+    @Html.LabelFor(model => model.Password)
+    @Html.EditorFor(model => model.Password)
+
+    <button class="btn btn-primary">Login</button>
+}
