@@ -4,15 +4,15 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Login</h2>
+<h1 class="text-center">Login</h1>
 
 @using (Html.BeginForm())
-{
+{<div class="container d-flex align-content-center align-items-center flex-column">
     @Html.LabelFor(model => model.Username)
     @Html.EditorFor(model => model.Username)
 
     @Html.LabelFor(model => model.Password)
     @Html.EditorFor(model => model.Password)
-
-    <button class="btn btn-primary">Login</button>
+    <button class="btn btn-primary mt-3">Login</button>
+</div>
 }

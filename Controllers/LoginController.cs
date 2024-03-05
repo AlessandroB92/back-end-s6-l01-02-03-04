@@ -15,14 +15,13 @@ namespace back_end_s6_l01_02_03_04.Controllers
         // GET: Login
         public ActionResult Index()
         {
-            
+            if (HttpContext.User.Identity.IsAuthenticated) return RedirectToAction("Add");
             return View();
         }
 
         [HttpPost]
         public ActionResult Index(Admin admin)
         {
-            // cercare l'utente con author.Username e verificare che abbia author.Password nel DB
             string connString = ConfigurationManager.ConnectionStrings["BRTDbContext"].ToString();
             var conn = new SqlConnection(connString);
             conn.Open();
@@ -35,7 +34,7 @@ namespace back_end_s6_l01_02_03_04.Controllers
             {
                 reader.Read();
                 FormsAuthentication.SetAuthCookie(reader["AdminID"].ToString(), true);
-                return RedirectToAction("Index", "Post"); // TODO: alla pagina di pannello
+                return RedirectToAction("ClientePrivato", "Login"); ; // TODO: alla pagina di pannello
             }
 
             return RedirectToAction("Index");
@@ -53,10 +52,8 @@ namespace back_end_s6_l01_02_03_04.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Logout()
         {
-            // sloggare l'utente
             FormsAuthentication.SignOut();
 
-            // ridirezionarlo da qualche parte
             return RedirectToAction("Index", "Home");
 
         }
