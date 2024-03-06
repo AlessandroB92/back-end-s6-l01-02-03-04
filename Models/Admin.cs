@@ -17,7 +17,7 @@ namespace back_end_s6_l01_02_03_04.Models
 
         [DataType(DataType.Password)]
         [Required(ErrorMessage = "Campo obbligatorio")]
-        [StringLength(15, MinimumLength = 8, ErrorMessage = "Min 8, max 15 caratteri")]
+        [StringLength(15, MinimumLength = 4, ErrorMessage = "Min 8, max 15 caratteri")]
         public string Password { get; set; }
     }
 }

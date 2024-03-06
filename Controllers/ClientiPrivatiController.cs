@@ -6,20 +6,26 @@ using back_end_s6_l01_02_03_04.Models;
 
 namespace back_end_s6_l01_02_03_04.Controllers
 {
-    public class ClientePrivatoController : Controller
+    public class ClientiPrivatiController : Controller
     {
-        public ActionResult Add()
+        public ActionResult Index()
         {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Privato");
+            }
             return View();
         }
 
         [HttpPost]
-        public ActionResult Add(ClientePrivato cliente)
+        [ValidateAntiForgeryToken]
+        public ActionResult Index(ClientiPrivati cliente)
         {
-            try
+            string connectionString = ConfigurationManager.ConnectionStrings["BRTDbContext"].ToString();
+            var conn = new SqlConnection(connectionString);
+            if (ModelState.IsValid)
             {
-                string connString = ConfigurationManager.ConnectionStrings["BRTDbContext"].ToString();
-                using (var conn = new SqlConnection(connString))
+                try
                 {
                     conn.Open();
                     var command = new SqlCommand("INSERT INTO ClientiPrivati (CodiceFiscale, Nome, Cognome, Indirizzo, Email) VALUES (@Nome, @Cognome, @Email, @Indirizzo, @CodiceFiscale)", conn);
@@ -30,14 +36,14 @@ namespace back_end_s6_l01_02_03_04.Controllers
                     command.Parameters.AddWithValue("@Email", cliente.Email);
                     command.ExecuteNonQuery();
                 }
-
-                return RedirectToAction("Index", "Home"); // Redirect alla home page dopo aver aggiunto il cliente
+                catch (Exception ex)
+                {
+                    return View("Error");
+                }
+                finally { conn.Close(); }
+                return RedirectToAction("Index", "Home"); //feedback riuscita
             }
-            catch (Exception)
-            {
-                ViewBag.ErrorMessage = "Si è verificato un errore durante l'aggiunta del cliente.";
-                return View(cliente); // Ritorna alla vista con il modello in caso di errore
-            }
+            return View();
         }
     }
 }
