@@ -10,9 +10,9 @@ namespace back_end_s6_l01_02_03_04.Controllers
     {
         public ActionResult Index()
         {
-            if (HttpContext.User.Identity.IsAuthenticated)
+            if (!HttpContext.User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Privato");
+                return RedirectToAction("Index", "Home");
             }
             return View();
         }
@@ -28,7 +28,7 @@ namespace back_end_s6_l01_02_03_04.Controllers
                 try
                 {
                     conn.Open();
-                    var command = new SqlCommand("INSERT INTO ClientiPrivati (CodiceFiscale, Nome, Cognome, Indirizzo, Email) VALUES (@Nome, @Cognome, @Email, @Indirizzo, @CodiceFiscale)", conn);
+                    var command = new SqlCommand("INSERT INTO ClientiPrivati (CodiceFiscale, Nome, Cognome, Indirizzo, Email) VALUES (@CodiceFiscale, @Nome, @Cognome, @Indirizzo, @Email)", conn);
                     command.Parameters.AddWithValue("@CodiceFiscale", cliente.CodiceFiscale);
                     command.Parameters.AddWithValue("@Nome", cliente.Nome);
                     command.Parameters.AddWithValue("@Cognome", cliente.Cognome);
@@ -41,7 +41,7 @@ namespace back_end_s6_l01_02_03_04.Controllers
                     return View("Error");
                 }
                 finally { conn.Close(); }
-                return RedirectToAction("Index", "Home"); //feedback riuscita
+                return RedirectToAction("Index", "Home");
             }
             return View();
         }
