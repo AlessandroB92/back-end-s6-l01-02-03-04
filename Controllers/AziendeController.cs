@@ -13,7 +13,7 @@ namespace back_end_s6_l01_02_03_04.Controllers
             {
                 if (!HttpContext.User.Identity.IsAuthenticated)
                 {
-                    ViewBag.ErrorMessage = "Devi effettuare il login per registrare un cliente.";
+                    ViewBag.ErrorMessage = "Devi effettuare il login per registrare un Azienda.";
                     return View("Error");
                 }
                 return View();
