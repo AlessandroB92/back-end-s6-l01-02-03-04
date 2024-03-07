@@ -37,7 +37,7 @@ namespace back_end_s6_l01_02_03_04.Controllers
                     command.Parameters.AddWithValue("@Email", cliente.Email);
                     command.ExecuteNonQuery();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     ViewBag.ErrorMessage = "Errore nella compilazione dei campi.";
                     return View("Error");
