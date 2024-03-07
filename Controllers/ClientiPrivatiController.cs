@@ -12,7 +12,8 @@ namespace back_end_s6_l01_02_03_04.Controllers
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                ViewBag.ErrorMessage = "Devi effettuare il login per registrare un cliente.";
+                return View("Error");
             }
             return View();
         }
@@ -38,6 +39,7 @@ namespace back_end_s6_l01_02_03_04.Controllers
                 }
                 catch (Exception ex)
                 {
+                    ViewBag.ErrorMessage = "Errore nella compilazione dei campi.";
                     return View("Error");
                 }
                 finally { conn.Close(); }

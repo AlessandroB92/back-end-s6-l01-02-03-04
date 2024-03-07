@@ -15,60 +15,62 @@ namespace back_end_s6_l01_02_03_04.Controllers
     {
         public ActionResult Index()
         {
-            if (HttpContext.User.Identity.IsAuthenticated)
+            if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Logged");
             }
+            ViewBag.ErrorMessage = TempData["ErrorMessage"];
             return View();
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Index(Admin admin)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["BRTDbContext"].ToString();
-            var conn = new SqlConnection(connectionString);
-            if (ModelState.IsValid) //per rendere i controlli dei model funzionanti
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    conn.Open();
-                    var command = new SqlCommand("SELECT * FROM Admin WHERE Username = @username AND Password = @password", conn);
-                    command.Parameters.AddWithValue("@username", admin.Username);
-                    command.Parameters.AddWithValue("@password", admin.Password);
-
-                    var reader = command.ExecuteReader();
-
-                    if (reader.HasRows)
+                    string connectionString = ConfigurationManager.ConnectionStrings["BRTDbContext"].ToString();
+                    using (var conn = new SqlConnection(connectionString))
                     {
-                        reader.Read();
-                        FormsAuthentication.SetAuthCookie(reader["AdminID"].ToString(), true);
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else //se il reader non ha rows, la select è andata a vuoto e quindi il database non riconosce l'utente
-                         //quindi ridireziona su errore perchè hai sbagliato qualche dato
-                    {
-                        return View("Error");
+                        conn.Open();
+                        var command = new SqlCommand("SELECT * FROM Admin WHERE Username = @username AND Password = @password", conn);
+                        command.Parameters.AddWithValue("@username", admin.Username);
+                        command.Parameters.AddWithValue("@password", admin.Password);
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.HasRows)
+                            {
+                                reader.Read();
+                                FormsAuthentication.SetAuthCookie(reader["AdminID"].ToString(), true);
+                                return RedirectToAction("Index", "Home");
+                            }
+                            else
+                            {
+                                // Imposta un messaggio di errore e reindirizza alla pagina di login
+                                TempData["ErrorMessage"] = "Credenziali errate. Riprova.";
+                                return RedirectToAction("Index");
+                            }
+                        }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return RedirectToAction("Logged");
-                }
-                finally
-                {
-                    conn.Close();
+                    // Gestisci l'errore in modo appropriato, ad esempio, registralo o mostra un messaggio all'utente
+                    ModelState.AddModelError("", "Si è verificato un errore durante il login.");
+                    return View(admin);
                 }
             }
-            return View();
-
+            return View(admin);
         }
 
         [Authorize]
-
         public ActionResult Logged()
         {
-            var AdminID = HttpContext.User.Identity.Name;
-            ViewBag.AdminID = AdminID;
+            var adminID = HttpContext.User.Identity.Name;
+            ViewBag.AdminID = adminID;
             return View();
         }
 
@@ -76,10 +78,8 @@ namespace back_end_s6_l01_02_03_04.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Logout()
         {
-            // sloggare l'utente
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Login");
-
         }
     }
 }

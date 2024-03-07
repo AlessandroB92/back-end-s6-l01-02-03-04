@@ -5,15 +5,25 @@
 }
 
 <h1 class="text-center">Login</h1>
+@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
 
 @using (Html.BeginForm())
-{<div class="container d-flex align-content-center align-items-center flex-column">
-    @Html.LabelFor(model => model.Username)
-    @Html.EditorFor(model => model.Username)
+{
+    @Html.AntiForgeryToken()
 
-    @Html.LabelFor(model => model.Password)
-    @Html.EditorFor(model => model.Password)
+    <div class="container d-flex align-content-center align-items-center flex-column">
+        @Html.LabelFor(model => model.Username)
+        @Html.EditorFor(model => model.Username)
 
-    <button class="btn btn-primary mt-3">Login</button>
-</div>
+        @Html.LabelFor(model => model.Password)
+        @Html.EditorFor(model => model.Password)
+
+        <button class="btn btn-primary mt-3">Login</button>
+    </div>
+}
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
 }
